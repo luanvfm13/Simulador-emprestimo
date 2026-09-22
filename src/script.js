@@ -39,6 +39,13 @@ const formatadorMoeda = new Intl.NumberFormat('pt-BR', {
   currency: 'BRL',
 });
 
+// Sem o símbolo "R$": usado nas células do extrato para ganhar espaço
+// horizontal (a legenda acima da tabela já informa que os valores são em reais).
+const formatadorNumero = new Intl.NumberFormat('pt-BR', {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
 /**
  * Define a taxa de juros mensal com base no número de parcelas.
  * Estrutura condicional exigida pelo escopo do projeto (if/else).
@@ -204,10 +211,10 @@ function exibirResultado({ taxaJuros, valorParcela, qtdParcelas, extrato, audito
     }
     tr.innerHTML = `
       <td>${linha.mes}</td>
-      <td>${formatadorMoeda.format(linha.saldoInicial)}</td>
-      <td>${formatadorMoeda.format(linha.juros)}</td>
-      <td>${formatadorMoeda.format(linha.amortizacao)}</td>
-      <td>${formatadorMoeda.format(linha.saldoFinal)}</td>
+      <td>${formatadorNumero.format(linha.saldoInicial)}</td>
+      <td>${formatadorNumero.format(linha.juros)}</td>
+      <td>${formatadorNumero.format(linha.amortizacao)}</td>
+      <td>${formatadorNumero.format(linha.saldoFinal)}</td>
     `;
     corpoExtrato.appendChild(tr);
   });
