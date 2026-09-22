@@ -1,0 +1,440 @@
+/* =========================================================================
+   Simulador de Empréstimos e Juros para MEI
+   Identidade visual: página de livro-razão (ledger) + carnê de pagamento.
+   Papel pautado verde-claro, cartão-ficha, recibo com borda serrilhada
+   e um "selo" de auditoria — referências do universo contábil do MEI.
+   ========================================================================= */
+
+:root {
+  /* Paleta (papel de livro-razão + tintas de carimbo) */
+  --paper: #e7f0e4;
+  --paper-line: #a9c7a6;
+  --ink: #16301f;
+  --ink-soft: #4a6656;
+  --card: #fbfbf4;
+  --stamp-red: #a6352a;
+  --stamp-blue: #1e4e6b;
+  --desk: #d7ddd0;
+
+  /* Tipografia */
+  --fonte-titulo: 'Zilla Slab', Georgia, serif;
+  --fonte-corpo: 'IBM Plex Sans', 'Segoe UI', sans-serif;
+  --fonte-numeros: 'IBM Plex Mono', 'Courier New', monospace;
+
+  --raio: 4px;
+}
+
+/* ----- Reset básico ----- */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--desk);
+  color: var(--ink);
+  font-family: var(--fonte-corpo);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2 {
+  font-family: var(--fonte-titulo);
+  color: var(--ink);
+  margin: 0 0 0.4em;
+  font-weight: 600;
+}
+
+a { color: var(--stamp-blue); }
+
+/* ----- A "página" de livro-razão ----- */
+.pagina {
+  position: relative;
+  max-width: 980px;
+  margin: clamp(1rem, 4vw, 3.5rem) auto;
+  padding: clamp(1.5rem, 4vw, 3rem) clamp(1.25rem, 5vw, 3.5rem);
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 27px,
+      var(--paper-line) 27px,
+      var(--paper-line) 28px
+    ),
+    var(--paper);
+  box-shadow: 8px 8px 0 rgba(22, 48, 31, 0.12);
+  border: 1px solid rgba(22, 48, 31, 0.15);
+}
+
+/* margem vermelha de caderno, deslocada para a área de conteúdo */
+.pagina::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: clamp(2.6rem, 8vw, 4.75rem);
+  width: 2px;
+  background: rgba(166, 53, 42, 0.35);
+  pointer-events: none;
+}
+
+.cabecalho {
+  padding-left: clamp(0.75rem, 2vw, 1.5rem);
+  margin-bottom: 2rem;
+}
+
+.cabecalho h1 {
+  font-size: clamp(1.5rem, 3.4vw, 2.1rem);
+  line-height: 1.25;
+  max-width: 22ch;
+}
+
+.subtitulo {
+  max-width: 62ch;
+  color: var(--ink-soft);
+  font-size: 1rem;
+}
+
+/* ----- Layout principal ----- */
+.conteudo {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: clamp(1.25rem, 3vw, 2.25rem);
+  align-items: start;
+  padding-left: clamp(0.75rem, 2vw, 1.5rem);
+}
+
+@media (max-width: 860px) {
+  .conteudo {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ----- Ficha (formulário) — cartão-índice com topo serrilhado ----- */
+.ficha {
+  background: var(--card);
+  border: 1px solid rgba(22, 48, 31, 0.15);
+  border-radius: var(--raio);
+  padding: 1.5rem 1.5rem 1.75rem;
+  transform: rotate(-0.35deg);
+  box-shadow: 3px 4px 0 rgba(22, 48, 31, 0.08);
+  position: relative;
+}
+
+.ficha::before {
+  content: '';
+  display: block;
+  height: 10px;
+  margin: -1.5rem -1.5rem 1.25rem;
+  background-image: radial-gradient(circle, var(--desk) 3px, transparent 3.5px);
+  background-size: 16px 16px;
+  background-position: top 3px left 4px;
+}
+
+.ficha h2 {
+  font-size: 1.15rem;
+}
+
+.campo {
+  margin-bottom: 1.15rem;
+}
+
+.campo label {
+  display: block;
+  font-size: 0.92rem;
+  font-weight: 500;
+  margin-bottom: 0.35rem;
+}
+
+.campo input {
+  width: 100%;
+  font-family: var(--fonte-numeros);
+  font-size: 1rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--paper-line);
+  border-radius: var(--raio);
+  background: #fff;
+  color: var(--ink);
+}
+
+.campo__moeda {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--paper-line);
+  border-radius: var(--raio);
+  overflow: hidden;
+  background: #fff;
+}
+
+.campo__moeda span {
+  display: flex;
+  align-items: center;
+  padding: 0 0.65rem;
+  background: rgba(169, 199, 166, 0.35);
+  font-family: var(--fonte-numeros);
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
+
+.campo__moeda input {
+  border: none;
+  border-radius: 0;
+}
+
+.campo input:focus,
+.botao:focus-visible {
+  outline: 3px solid var(--stamp-blue);
+  outline-offset: 2px;
+}
+
+.campo__moeda:focus-within {
+  outline: 3px solid var(--stamp-blue);
+  outline-offset: 2px;
+}
+
+.campo__erro {
+  min-height: 1.1em;
+  margin: 0.35rem 0 0;
+  font-size: 0.85rem;
+  color: var(--stamp-red);
+}
+
+.campo__ajuda {
+  margin: 0.4rem 0 0;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+
+.acoes {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 1.4rem;
+}
+
+.botao {
+  font-family: var(--fonte-corpo);
+  font-size: 0.95rem;
+  font-weight: 500;
+  padding: 0.65rem 1.15rem;
+  border-radius: var(--raio);
+  border: 1.5px solid var(--ink);
+  cursor: pointer;
+  transition: transform 0.12s ease, background-color 0.12s ease;
+}
+
+.botao--principal {
+  background: var(--ink);
+  color: var(--card);
+}
+
+.botao--principal:hover {
+  background: #1f4029;
+}
+
+.botao--secundario {
+  background: transparent;
+  color: var(--ink);
+}
+
+.botao--secundario:hover {
+  background: rgba(22, 48, 31, 0.06);
+}
+
+.botao:active {
+  transform: translateY(1px);
+}
+
+.regra-taxa {
+  margin: 1.25rem 0 0;
+  padding-top: 0.9rem;
+  border-top: 1px dashed var(--paper-line);
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+}
+
+/* ----- Resultado ----- */
+.resultado {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+/* Recibo (resumo) com base serrilhada, como um talão de carnê */
+.recibo {
+  background: var(--card);
+  border: 1px solid rgba(22, 48, 31, 0.15);
+  border-top: none;
+  padding: 1.5rem 1.5rem 0;
+  box-shadow: 3px 4px 0 rgba(22, 48, 31, 0.08);
+  position: relative;
+}
+
+.recibo h2 {
+  font-size: 1.15rem;
+}
+
+.recibo__lista {
+  margin: 0.75rem 0 0;
+}
+
+.recibo__linha {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px dashed var(--paper-line);
+}
+
+.recibo__linha dt {
+  color: var(--ink-soft);
+  font-size: 0.92rem;
+}
+
+.recibo__linha dd {
+  margin: 0;
+  font-family: var(--fonte-numeros);
+  font-size: 1.05rem;
+  font-weight: 500;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.selo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 1.1rem 0 0.25rem;
+  padding: 0.5rem 1.25rem;
+  border: 3px double currentColor;
+  border-radius: var(--raio);
+  font-family: var(--fonte-titulo);
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.03em;
+  transform: rotate(-4deg);
+  opacity: 0;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.selo.selo--visivel {
+  opacity: 0.9;
+  animation: carimbar 0.28s ease-out;
+}
+
+.selo--aprovado {
+  color: var(--stamp-blue);
+}
+
+.selo--risco {
+  color: var(--stamp-red);
+}
+
+@keyframes carimbar {
+  0%   { transform: rotate(-4deg) scale(1.6); opacity: 0; }
+  70%  { transform: rotate(-4deg) scale(0.95); opacity: 0.9; }
+  100% { transform: rotate(-4deg) scale(1); opacity: 0.9; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .selo.selo--visivel {
+    animation: none;
+  }
+}
+
+.recibo__mensagem {
+  margin: 0;
+  padding: 0.9rem 0 1.4rem;
+  font-size: 0.92rem;
+  color: var(--ink-soft);
+}
+
+/* borda serrilhada inferior do recibo, imitando papel destacado */
+.recibo::after {
+  content: '';
+  display: block;
+  height: 14px;
+  background:
+    linear-gradient(-45deg, var(--card) 7px, transparent 0) 0 0 / 14px 14px,
+    linear-gradient(45deg, var(--card) 7px, transparent 0) 0 0 / 14px 14px;
+  background-color: var(--desk);
+}
+
+@media (max-width: 860px) {
+  .recibo::after {
+    background-color: var(--paper);
+  }
+}
+
+/* ----- Extrato (tabela) ----- */
+.extrato h2 {
+  font-size: 1.15rem;
+  padding-left: 0.1rem;
+}
+
+.extrato__tabela-wrap {
+  overflow-x: auto;
+  border: 1px solid rgba(22, 48, 31, 0.15);
+  border-radius: var(--raio);
+  background: var(--card);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--fonte-numeros);
+  font-size: 0.88rem;
+  min-width: 520px;
+}
+
+thead th {
+  position: sticky;
+  top: 0;
+  background: rgba(169, 199, 166, 0.4);
+  font-family: var(--fonte-corpo);
+  font-weight: 600;
+  font-size: 0.82rem;
+  text-align: right;
+  padding: 0.6rem 0.85rem;
+  border-bottom: 2px solid var(--paper-line);
+}
+
+thead th:first-child,
+tbody td:first-child {
+  text-align: left;
+}
+
+tbody td {
+  padding: 0.5rem 0.85rem;
+  text-align: right;
+  border-bottom: 1px solid rgba(169, 199, 166, 0.5);
+  white-space: nowrap;
+}
+
+tbody tr:last-child td {
+  font-weight: 600;
+  border-bottom: none;
+}
+
+tbody tr.linha-risco td {
+  color: var(--stamp-red);
+}
+
+/* ----- Rodapé ----- */
+.rodape {
+  margin-top: 2.5rem;
+  padding: 1.25rem clamp(0.75rem, 2vw, 1.5rem) 0;
+  border-top: 1px dashed var(--paper-line);
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+
+.rodape p {
+  margin: 0 0 0.35rem;
+  max-width: 70ch;
+}
+
+.rodape__aviso {
+  font-style: italic;
+}

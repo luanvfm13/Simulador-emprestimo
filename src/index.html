@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulador de Empréstimos e Juros para MEI</title>
+  <meta name="description" content="Simule parcelamentos de crédito para Microempreendedores Individuais com juros pela Tabela Price e auditoria de comprometimento de renda.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="pagina">
+
+    <header class="cabecalho">
+      <h1>Simulador de Empréstimos e Juros para MEI</h1>
+      <p class="subtitulo">
+        Informe o valor, o número de parcelas e a sua renda mensal para ver, mês a mês,
+        como a dívida se comporta pela Tabela Price — e se ela cabe no orçamento do seu negócio.
+      </p>
+    </header>
+
+    <main class="conteudo">
+
+      <section class="ficha" aria-labelledby="ficha-titulo">
+        <h2 id="ficha-titulo">Dados da simulação</h2>
+
+        <form id="form-simulacao" novalidate>
+
+          <div class="campo">
+            <label for="ValorEmp">Valor do empréstimo</label>
+            <div class="campo__moeda">
+              <span aria-hidden="true">R$</span>
+              <input
+                type="number"
+                id="ValorEmp"
+                name="ValorEmp"
+                inputmode="decimal"
+                min="1"
+                step="0.01"
+                placeholder="0,00"
+                autocomplete="off"
+                required
+              >
+            </div>
+            <p class="campo__erro" id="erro-ValorEmp" role="alert"></p>
+          </div>
+
+          <div class="campo">
+            <label for="QtdP">Número de parcelas (1 a 24 meses)</label>
+            <input
+              type="number"
+              id="QtdP"
+              name="QtdP"
+              inputmode="numeric"
+              min="1"
+              max="24"
+              step="1"
+              placeholder="Ex.: 12"
+              autocomplete="off"
+              required
+            >
+            <p class="campo__erro" id="erro-QtdP" role="alert"></p>
+          </div>
+
+          <div class="campo">
+            <label for="RenM">Renda mensal do MEI</label>
+            <div class="campo__moeda">
+              <span aria-hidden="true">R$</span>
+              <input
+                type="number"
+                id="RenM"
+                name="RenM"
+                inputmode="decimal"
+                min="1"
+                step="0.01"
+                placeholder="0,00"
+                autocomplete="off"
+                required
+              >
+            </div>
+            <p class="campo__erro" id="erro-RenM" role="alert"></p>
+            <p class="campo__ajuda">
+              Usada só para calcular se a parcela cabe no seu orçamento — nenhum dado é salvo ou enviado a um servidor.
+            </p>
+          </div>
+
+          <div class="acoes">
+            <button type="submit" class="botao botao--principal">Simular parcelamento</button>
+            <button type="reset" class="botao botao--secundario" id="botao-limpar">Limpar campos</button>
+          </div>
+
+          <p class="regra-taxa">
+            Taxa aplicada automaticamente: <strong>1,5% ao mês</strong> em até 6 parcelas,
+            <strong>2,8% ao mês</strong> acima disso.
+          </p>
+
+        </form>
+      </section>
+
+      <section class="resultado" id="resultado" hidden aria-live="polite">
+
+        <div class="recibo">
+          <h2>Resumo da simulação</h2>
+
+          <dl class="recibo__lista">
+            <div class="recibo__linha">
+              <dt>Taxa de juros aplicada</dt>
+              <dd id="res-taxa">—</dd>
+            </div>
+            <div class="recibo__linha">
+              <dt>Valor da parcela fixa</dt>
+              <dd id="res-parcela">—</dd>
+            </div>
+            <div class="recibo__linha">
+              <dt>Total pago ao final</dt>
+              <dd id="res-total">—</dd>
+            </div>
+            <div class="recibo__linha">
+              <dt>Total pago em juros</dt>
+              <dd id="res-juros">—</dd>
+            </div>
+            <div class="recibo__linha">
+              <dt>Comprometimento da renda</dt>
+              <dd id="res-comprometimento">—</dd>
+            </div>
+          </dl>
+
+          <div class="selo" id="selo-auditoria">
+            <span id="selo-texto">—</span>
+          </div>
+
+          <p class="recibo__mensagem" id="mensagem-auditoria"></p>
+        </div>
+
+        <div class="extrato">
+          <h2>Extrato mensal da dívida</h2>
+          <div class="extrato__tabela-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Mês</th>
+                  <th scope="col">Saldo inicial</th>
+                  <th scope="col">Juros do mês</th>
+                  <th scope="col">Amortização</th>
+                  <th scope="col">Saldo final</th>
+                </tr>
+              </thead>
+              <tbody id="corpo-extrato"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+
+    <footer class="rodape">
+      <p>
+        Simulador de Empréstimos e Juros para MEI — desenvolvido por Luan Vicktor Ferreira Moura
+        para a disciplina de Práticas Técnicas em Informática (PTIC), curso técnico em
+        Desenvolvimento de Sistemas, ETEC Euro Albino de Souza.
+      </p>
+      <p class="rodape__aviso">
+        Ferramenta educacional. Os valores calculados são estimativas e não substituem uma proposta formal de crédito.
+      </p>
+    </footer>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
